@@ -7,7 +7,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"
 import argparse
 import glob
 import re
-
+import numpy as np
 
 def recog_file(filename, ground_truth_path):
 
@@ -22,11 +22,14 @@ def recog_file(filename, ground_truth_path):
         f.close()
 
     n_frame_errors = 0
+    n_subactions = 0
     for i in range(len(recognized)):
         if not recognized[i] == ground_truth[i]:
             n_frame_errors += 1
+        if i == 0 or not ground_truth[i] == ground_truth[i-1]:
+            n_subactions += 1
 
-    return n_frame_errors, len(recognized)
+    return n_frame_errors, len(recognized), n_subactions
 
 
 ### MAIN #######################################################################
@@ -45,11 +48,16 @@ print('Evaluate %d video files...' % len(filelist))
 
 n_frames = 0
 n_errors = 0
+stats = []
 # loop over all recognition files and evaluate the frame error
 for filename in filelist:
-    errors, frames = recog_file(filename, args.ground_truth_dir)
+    errors, frames, n_subactions = recog_file(filename, args.ground_truth_dir)
     n_errors += errors
     n_frames += frames
+    stats.append([errors, frames, n_subactions])
+
 
 # print frame accuracy (1.0 - frame error rate)
 print('frame accuracy: %f' % (1.0 - float(n_errors) / n_frames))
+
+np.save(stats, 'errors_frames_subactions_stats.npy')
