@@ -1,5 +1,9 @@
 #!/usr/bin/python2.7
 
+#set default GPU to gpu 0
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 import numpy as np
 from utils.dataset import Dataset
 from utils.network import Trainer, Forwarder

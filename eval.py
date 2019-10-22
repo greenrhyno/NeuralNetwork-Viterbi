@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+#set default GPU to gpu 0
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 import argparse
 import glob
 import re
